@@ -11,7 +11,7 @@ interface RestauranteProps {
 
 const Restaurante = ({ restaurante }: RestauranteProps) => {
 
-  const [pratos, setPratos] = useState<IPrato[]>([])
+  const [pratos, setPratos] = useState<IPrato[]>()
 
   useEffect(() => {
     // obter pratos
@@ -23,14 +23,12 @@ const Restaurante = ({ restaurante }: RestauranteProps) => {
       .catch(erro => console.log(erro))
   }, [restaurante.id])
 
-  restaurante.pratos = pratos
-
   return (<section className={estilos.Restaurante}>
     <div className={estilos.Titulo}>
       <h2>{restaurante.nome}</h2>
     </div>
     <div>
-      {restaurante.pratos?.map(item => <Prato prato={item} key={item.id} />)}
+      {pratos?.map(item => <Prato prato={item} key={item.id} />)}
     </div>
   </section>)
 }
