@@ -1,35 +1,31 @@
-import { Button, FormControl, FormHelperText, FormLabel, Input, InputAdornment, InputLabel, OutlinedInput, TextField } from "@mui/material"
+import { Button, TextField } from "@mui/material"
 import axios from "axios"
 import { useState } from "react"
 
 const FormularioRestaurante = () => {
-    const [nome, setNome] = useState('')
+    const [nomeRestaurante, setNomeRestaurante] = useState('')
 
-    const cadastrarRestaurante = () => {
-        const restaurante = { nome }
-
+    const aoSubmeterForm = (evento: React.FormEvent<HTMLFormElement>) => {
+        evento.preventDefault()
         axios
-            .post("http://localhost:8000/api/v2/restaurantes/", restaurante)
+            .post("http://localhost:8000/api/v2/restaurantes/", {
+                nome: nomeRestaurante
+            })
             .then(resposta => {
-                console.log(resposta);
+                alert("Restaurante cadastrado com sucesso!")
             })
             .catch(erro => console.log(erro))
     }
 
     return (
-        <form onSubmit={cadastrarRestaurante}>
-            <h2>Cadastro de Restaurantes</h2>
+        <form onSubmit={aoSubmeterForm}>
             <TextField
-                label="nome"
-                variant="outlined"
-                type="text"
-                color="secondary"
-                sx={{ mb: 3 }}
-                fullWidth
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
+                value={nomeRestaurante}
+                onChange={evento => setNomeRestaurante(evento.target.value)}
+                variant="standard"
+                label="Nome do Restaurante"
             />
-            <Button variant="outlined" color="secondary" type="submit">Cadastrar</Button>
+            <Button type="submit" variant="outlined">Salvar</Button>
         </form>
     )
 }
