@@ -11,17 +11,6 @@ const ListaRestaurantes = () => {
   const [proximaPagina, setProximaPagina] = useState('')
   const [paginaAnterior, setPaginaAnterior] = useState('')
 
-  useEffect(() => {
-    // obter restaurantes
-    axios
-      .get<IPaginacao<IRestaurante>>('http://localhost:8000/api/v1/restaurantes/')
-      .then(resposta => {
-        setRestaurantes(resposta.data.results)
-        setProximaPagina(resposta.data.next)
-      })
-      .catch(erro => console.log(erro))
-  }, []);
-
   const verMais = () => {
     axios
       .get<IPaginacao<IRestaurante>>(proximaPagina)
@@ -32,9 +21,9 @@ const ListaRestaurantes = () => {
       .catch(erro => console.log(erro))
   }
 
-  const verProximaPagina = () => {
+  const carregarDados = (url: string) => {
     axios
-      .get<IPaginacao<IRestaurante>>(proximaPagina)
+      .get<IPaginacao<IRestaurante>>(url)
       .then(resposta => {
         setRestaurantes(resposta.data.results)
         setProximaPagina(resposta.data.next)
@@ -42,24 +31,17 @@ const ListaRestaurantes = () => {
       })
       .catch(erro => console.log(erro))
   }
-
-  const verPaginaAnterior = () => {
-    axios
-      .get<IPaginacao<IRestaurante>>(paginaAnterior)
-      .then(resposta => {
-        setRestaurantes(resposta.data.results)
-        setProximaPagina(resposta.data.next)
-        setPaginaAnterior(resposta.data.previous)
-      })
-      .catch(erro => console.log(erro))
-  }
+  
+  useEffect(() => {
+    // obter restaurantes
+    carregarDados('http://localhost:8000/api/v1/restaurantes/')
+  }, []);
 
   return (<section className={style.ListaRestaurantes}>
     <h1>Os restaurantes mais <em>bacanas</em>!</h1>
     {restaurantes?.map(item => <Restaurante restaurante={item} key={item.id} />)}
-    {proximaPagina && <button onClick={verMais}> ver mais </button>}
-    {proximaPagina && <button onClick={verProximaPagina}> próxima página </button>}
-    {paginaAnterior && <button onClick={verPaginaAnterior}> página anterior </button>}
+    {<button onClick={() => carregarDados(proximaPagina)} disabled={!proximaPagina}> Próxima Página </button>}
+    {<button onClick={() => carregarDados(paginaAnterior)} disabled={!paginaAnterior}> Página Anterior </button>}
   </section>)
 }
 
