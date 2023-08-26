@@ -10,18 +10,19 @@ const FormularioRestaurante = () => {
     const [nomeRestaurante, setNomeRestaurante] = useState('')
 
     useEffect(() => {
-        if(parametros.id) {
+        if (parametros.id) {
             axios
-            .get<IRestaurante>(`http://localhost:8000/api/v2/restaurantes/${parametros.id}/`)
-            .then(resposta => {
-                setNomeRestaurante(resposta.data.nome)
-            })
-            .catch(erro => console.log(erro))
+                .get<IRestaurante>(`http://localhost:8000/api/v2/restaurantes/${parametros.id}/`)
+                .then(resposta => {
+                    setNomeRestaurante(resposta.data.nome)
+                })
+                .catch(erro => console.log(erro))
         }
-    },[parametros])
+    }, [parametros])
 
     const aoSubmeterForm = (evento: React.FormEvent<HTMLFormElement>) => {
         evento.preventDefault()
+
         if (parametros.id) {
             axios
                 .put(`http://localhost:8000/api/v2/restaurantes/${parametros.id}/`, {

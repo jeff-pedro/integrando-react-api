@@ -19,11 +19,15 @@ const AdministracaoRestaurantes = () => {
             .catch(erro => console.log(erro))
     }, [])
 
-    const deletarRestaurante = (idRestaurante: number) => {
+    const excluir = (restauranteASerExcluido: IRestaurante) => {
         axios
-            .delete(`http://localhost:8000/api/v2/restaurantes/${idRestaurante}/`)
+            .delete(`http://localhost:8000/api/v2/restaurantes/${restauranteASerExcluido.id}/`)
             .then(() => {
-                alert('Restaurante deletado com sucesso!')
+                const listaRestaurantes = restaurantes.filter(restaurante => {
+                    return restaurante.id !== restauranteASerExcluido.id
+                })
+
+                setRestaurantes([...listaRestaurantes])
             })
             .catch(erro => console.log(erro))
     }
@@ -48,7 +52,7 @@ const AdministracaoRestaurantes = () => {
                                 [ <Link to={`/admin/restaurantes/${restaurante.id}`}>editar</Link> ]
                             </TableCell>
                             <TableCell>
-                                <IconButton aria-label="delete" onClick={() => deletarRestaurante(restaurante.id)}>
+                                <IconButton aria-label="delete" onClick={() => excluir(restaurante)}>
                                     <DeleteIcon />
                                 </IconButton>
                             </TableCell>
