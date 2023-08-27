@@ -9,6 +9,9 @@ import Paper from '@mui/material/Paper';
 import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import { Button } from '@mui/material'
 
 // esses são os possíveis parâmetros que podemos enviar para a API
 interface IParametrosBusca {
@@ -92,8 +95,20 @@ const ListaRestaurantes = () => {
     </Paper>
 
     {restaurantes?.map(item => <Restaurante restaurante={item} key={item.id} />)}
-    {<button onClick={() => carregarDados(paginaAnterior)} disabled={!paginaAnterior}> Página Anterior </button>}
-    {<button onClick={() => carregarDados(proximaPagina)} disabled={!proximaPagina}> Próxima Página </button>}
+
+    <Button
+      onClick={() => carregarDados(paginaAnterior)}
+      disabled={!paginaAnterior}
+      variant="contained"
+      startIcon={<NavigateBeforeIcon />}> Anterior
+    </Button>
+    <Button
+      onClick={() => carregarDados(proximaPagina)}
+      disabled={!proximaPagina}
+      variant="contained"
+      endIcon={<NavigateNextIcon />}> Próxima
+    </Button>
+
   </section>)
 }
 
