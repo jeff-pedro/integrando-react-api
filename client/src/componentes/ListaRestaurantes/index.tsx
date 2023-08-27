@@ -1,17 +1,17 @@
-import axios, { AxiosRequestConfig } from 'axios'
-import IRestaurante from '../../interfaces/IRestaurante'
-import { IPaginacao } from '../../interfaces/IPaginacao'
-import style from './ListaRestaurantes.module.scss'
-import Restaurante from './Restaurante'
-import { useEffect, useState } from 'react'
-
-import Paper from '@mui/material/Paper';
-import InputBase from '@mui/material/InputBase';
-import IconButton from '@mui/material/IconButton';
+import { Button, Paper, InputBase, IconButton } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
-import { Button } from '@mui/material'
+
+import IRestaurante from '../../interfaces/IRestaurante'
+import IPaginacao from '../../interfaces/IPaginacao'
+import Restaurante from './Restaurante'
+import style from './ListaRestaurantes.module.scss'
+import http from '../../http'
+
+import { useEffect, useState } from 'react'
+import { AxiosRequestConfig } from 'axios';
+
 
 // esses são os possíveis parâmetros que podemos enviar para a API
 interface IParametrosBusca {
@@ -30,7 +30,7 @@ const ListaRestaurantes = () => {
   // agora, o carregarDados recebe opcionalmente as opções de configuração do axios
   const carregarDados = (url: string, opcoes: AxiosRequestConfig = {}) => {
 
-    axios
+    http.default
       .get<IPaginacao<IRestaurante>>(url, opcoes)
       .then(resposta => {
         setRestaurantes(resposta.data.results)
@@ -52,7 +52,7 @@ const ListaRestaurantes = () => {
       opcoes.params.search = busca
     }
 
-    carregarDados('http://localhost:8000/api/v1/restaurantes/', opcoes)
+    carregarDados('restaurantes/', opcoes)
   }
 
   // funcionalidade de carregar paginas de dados
@@ -68,7 +68,7 @@ const ListaRestaurantes = () => {
 
   useEffect(() => {
     // obter restaurantes
-    carregarDados('http://localhost:8000/api/v1/restaurantes/')
+    carregarDados('restaurantes/')
   }, []);
 
   return (<section className={style.ListaRestaurantes}>
@@ -77,8 +77,8 @@ const ListaRestaurantes = () => {
     {/* <form onSubmit={buscar}>
       <input type="text" value={busca} onChange={evento => setBusca(evento.target.value)} />
       <button type='submit'>buscar</button>
-    </form>
- */}
+    </form>*/
+    }
 
     <Paper onSubmit={buscar}
       component="form"

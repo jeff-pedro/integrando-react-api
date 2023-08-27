@@ -1,19 +1,21 @@
 import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
-import IRestaurante from "../../../interfaces/IRestaurante"
-import axios from "axios"
-import { useEffect, useState } from "react"
-
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
+
+import { useEffect, useState } from "react"
+
+import IRestaurante from "../../../interfaces/IRestaurante"
+import http from "../../../http";
+
 
 const AdministracaoRestaurantes = () => {
     // obter restaurantes
     const [restaurantes, setRestaurantes] = useState<IRestaurante[]>([])
 
     useEffect(() => {
-        axios
-            .get<IRestaurante[]>("http://localhost:8000/api/v2/restaurantes/")
+        http.admin
+            .get<IRestaurante[]>("restaurantes/")
             .then(resposta => {
                 setRestaurantes(resposta.data)
             })
@@ -21,8 +23,8 @@ const AdministracaoRestaurantes = () => {
     }, [])
 
     const excluir = (restauranteASerExcluido: IRestaurante) => {
-        axios
-            .delete(`http://localhost:8000/api/v2/restaurantes/${restauranteASerExcluido.id}/`)
+        http.admin
+            .delete(`restaurantes/${restauranteASerExcluido.id}/`)
             .then(() => {
                 const listaRestaurantes = restaurantes.filter(restaurante => {
                     return restaurante.id !== restauranteASerExcluido.id
