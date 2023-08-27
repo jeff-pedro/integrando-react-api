@@ -2,9 +2,10 @@ import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHe
 import IRestaurante from "../../../interfaces/IRestaurante"
 import axios from "axios"
 import { useEffect, useState } from "react"
-import { Link } from "react-router-dom"
 
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import AddIcon from '@mui/icons-material/Add';
 
 const AdministracaoRestaurantes = () => {
     // obter restaurantes
@@ -49,15 +50,22 @@ const AdministracaoRestaurantes = () => {
                                 {restaurante.nome}
                             </TableCell>
                             <TableCell>
-                                [ <Link to={`/admin/restaurantes/${restaurante.id}`}>editar</Link> ]
+                                <IconButton aria-label="editar" href={`/admin/restaurantes/${restaurante.id}`}>
+                                    <EditIcon />
+                                </IconButton>
                             </TableCell>
                             <TableCell>
-                                <IconButton aria-label="delete" onClick={() => excluir(restaurante)}>
+                                <IconButton aria-label="deletar" onClick={() => excluir(restaurante)}>
                                     <DeleteIcon />
                                 </IconButton>
                             </TableCell>
                         </TableRow>
                     )}
+                    <TableRow>
+                        <IconButton aria-label="cadastrar" href="/admin/restaurantes/novo/"> 
+                            <AddIcon /> Cadastrar
+                        </IconButton>
+                    </TableRow>
                 </TableBody>
             </Table>
         </TableContainer>
