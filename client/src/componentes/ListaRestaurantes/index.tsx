@@ -1,4 +1,4 @@
-import { Button, Paper, InputBase, IconButton } from '@mui/material'
+import { Button, Paper, InputBase, IconButton, Select, MenuItem, Stack, Divider, Box } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
@@ -26,6 +26,7 @@ const ListaRestaurantes = () => {
   const [paginaAnterior, setPaginaAnterior] = useState('')
 
   const [busca, setBusca] = useState('')
+  const [ordenacao, setOrdenacao] = useState('');
 
   // agora, o carregarDados recebe opcionalmente as opções de configuração do axios
   const carregarDados = (url: string, opcoes: AxiosRequestConfig = {}) => {
@@ -50,6 +51,7 @@ const ListaRestaurantes = () => {
 
     if (busca) {
       opcoes.params.search = busca
+      opcoes.params.ordering = ordenacao
     }
 
     carregarDados('restaurantes/', opcoes)
@@ -74,29 +76,36 @@ const ListaRestaurantes = () => {
   return (<section className={style.ListaRestaurantes}>
     <h1>Os restaurantes mais <em>bacanas</em>!</h1>
 
-    {/* <form onSubmit={buscar}>
-      <input type="text" value={busca} onChange={evento => setBusca(evento.target.value)} />
-      <button type='submit'>buscar</button>
-    </form>*/
-    }
-
     <Paper onSubmit={buscar}
       component="form"
-      sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
+      sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 500 }}
     >
-      <IconButton sx={{ p: '10px' }}> <SearchIcon /> </IconButton>
-      <InputBase
-        sx={{ ml: 1, flex: 1 }}
-        type="text"
-        placeholder="Busca Restaurantes"
-        value={busca}
-        onChange={evento => setBusca(evento.target.value)}
-      />
+      <Box sx={{ m: 1 }}>
+        <Button sx={{ p: '10px' }} type="submit" variant="text"><SearchIcon /></Button>
+        <InputBase
+          sx={{ ml: 1, flex: 1 }}
+          type="text"
+          placeholder="Busca Restaurantes"
+          value={busca}
+          onChange={evento => setBusca(evento.target.value)}
+        />
+      </Box>
+
+      <Select sx={{ ml: 1, flex: 1 }}
+        labelId="ordenacao-select"
+        id="ordenacao-select"
+        value={ordenacao}
+        onChange={evento => setOrdenacao(evento.target.value)}
+      >
+        <MenuItem value={""}>Padrão</MenuItem>
+        <MenuItem value={"id"}>Por ID</MenuItem>
+        <MenuItem value={"nome"}>Por Nome</MenuItem>
+      </Select>
     </Paper>
 
     {restaurantes?.map(item => <Restaurante restaurante={item} key={item.id} />)}
 
-    <Button
+    <Button sx={{ m: 1 }}
       onClick={() => carregarDados(paginaAnterior)}
       disabled={!paginaAnterior}
       variant="contained"
@@ -109,7 +118,35 @@ const ListaRestaurantes = () => {
       endIcon={<NavigateNextIcon />}> Próxima
     </Button>
 
-  </section>)
+{/* 
+    <form onSubmit={buscar}>
+      <div>
+        <input type="text" value={busca} onChange={evento => setBusca(evento.target.value)} />
+      </div>
+      <div>
+        <select
+          name="select-ordencao"
+          id="select-ordencao"
+          value={ordenacao}
+          onChange={evento => setOrdenacao(evento.target.value)}>
+          <option value="">Padrão</option>
+          <option value="id">Por ID</option>
+          <option value="nome" selected>Por Nome</option>
+        </select>
+      </div>
+      <div>
+        <button type='submit'>buscar</button>
+      </div>
+    </form>
+    
+    {<button onClick={() => carregarDados(paginaAnterior)} disabled={!paginaAnterior}>
+      Página Anterior
+    </button>}
+    {<button onClick={() => carregarDados(proximaPagina)} disabled={!proximaPagina}>
+      Próxima página
+    </button>}
+ */}
+  </section >)
 }
 
 export default ListaRestaurantes
