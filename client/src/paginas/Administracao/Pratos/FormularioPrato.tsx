@@ -1,61 +1,50 @@
-import { Box, Button, TextField, Typography } from "@mui/material"
+import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material"
 
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
-
-import IPrato from "../../../interfaces/IPrato"
 import http from "../../../http"
+import ITag from "../../../interfaces/ITag"
+import IRestaurante from "../../../interfaces/IRestaurante"
+
 
 const FormularioPrato = () => {
 
-    const parametros = useParams()
-    const [nomePrato, setNomePrato] = useState('')
-    const [tagPrato, setTagPrato] = useState('')
-    const [imagemPrato, setImagemPrato] = useState('')
-    const [descricaoPrato, setDescricaoPrato] = useState('')
+    const [nome, setNome] = useState('')
+    const [descricao, setDescricao] = useState('')
+    const [imagem, setImagem] = useState<File | null>(null)
+
+    const [tag, setTag] = useState('')
     const [restaurante, setRestaurante] = useState('')
 
+    const [tags, setTags] = useState<ITag[]>([])
+    const [restaurantes, setRestaurantes] = useState<IRestaurante[]>([])
+
+
     useEffect(() => {
-        if (parametros.id) {
-            http.admin
-                .get<IPrato>(`pratos/${parametros.id}/`)
-                .then(resposta => {
-                    setNomePrato(resposta.data.nome)
-                })
-                .catch(erro => console.log(erro))
+        // obter tags
+        http.admin
+            .get<{ tags: ITag[] }>('tags/')
+            .then(resultado => setTags(resultado.data.tags))
+            .catch(erro => console.log(erro))
+
+        // obter restaurantes
+        http.admin
+            .get<IRestaurante[]>('restaurantes/')
+            .then(resultado => setRestaurantes(resultado.data))
+            .catch(erro => console.log(erro))
+    }, [])
+
+    const selecionarArquivo = (evento: React.ChangeEvent<HTMLInputElement>) => {
+        if (evento.target.files?.length) {
+            setImagem(evento.target.files[0])
+        } else {
+            setImagem(null)
         }
-    }, [parametros])
+    }
 
     const aoSubmeterForm = (evento: React.FormEvent<HTMLFormElement>) => {
         evento.preventDefault()
 
-        if (parametros.id) {
-            http.admin
-                .put(`pratos/${parametros.id}/`, {
-                    nome: nomePrato,
-                    tag: tagPrato,
-                    imagem: imagemPrato,
-                    descricao: descricaoPrato,
-                    restaurante: restaurante
-                })
-                .then(() => {
-                    alert("Prato atualizado com sucesso!")
-                })
-                .catch(erro => console.log(erro))
-        } else {
-            http.admin
-                .post("pratos/", {
-                    nome: nomePrato,
-                    tag: tagPrato,
-                    imagem: imagemPrato,
-                    descricao: descricaoPrato,
-                    restaurante: restaurante
-                })
-                .then(() => {
-                    alert("Prato cadastrado com sucesso!")
-                })
-                .catch(erro => console.log(erro))
-        }
+        
     }
 
     return (
@@ -63,21 +52,45 @@ const FormularioPrato = () => {
             <Typography component="h1" variant="h5">Formulário de pratos</Typography>
             <Box component="form" sx={{ width: "100%" }} onSubmit={aoSubmeterForm}>
                 <TextField
-                    value={nomePrato}
-                    onChange={evento => setNomePrato(evento.target.value)}
-                    label="Nome do prato"
+                    value={nome}
+                    onChange={evento => setNome(evento.target.value)}
+                    label="Nome do Prato"
                     variant="standard"
                     fullWidth
                     required
+                    margin="dense"
                 />
+
                 <TextField
-                    value={tagPrato}
-                    onChange={evento => setTagPrato(evento.target.value)}
-                    label="Tag do prato"
+                    value={descricao}
+                    onChange={evento => setDescricao(evento.target.value)}
+                    label="Descrição do Prato"
                     variant="standard"
                     fullWidth
                     required
+                    margin="dense"
                 />
+
+                <FormControl margin="dense" fullWidth>
+                    <InputLabel id="select-tag">Tag</InputLabel>
+                    <Select labelId="select-tag" value={tag} onChange={evento => setTag(evento.target.value)}>
+                        {tags.map(tag => <MenuItem key={tag.id} value={tag.id}>
+                            {tag.value}
+                        </MenuItem>)}
+                    </Select>
+                </FormControl>
+
+                <FormControl margin="dense" fullWidth>
+                    <InputLabel id="select-restaurante">Restaurante</InputLabel>
+                    <Select labelId="select-restaurante" value={restaurante} onChange={evento => setRestaurante(evento.target.value)}>
+                        {restaurantes.map(restaurante => <MenuItem key={restaurante.id} value={restaurante.id}>
+                            {restaurante.nome}
+                        </MenuItem>)}
+                    </Select>
+                </FormControl>
+
+                <input type="file" onChange={selecionarArquivo}></input>
+
                 <Button sx={{ marginTop: 1 }} type="submit" variant="outlined" fullWidth>
                     Salvar
                 </Button>
