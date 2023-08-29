@@ -8,7 +8,6 @@ import { useEffect, useState } from "react"
 import IRestaurante from "../../../interfaces/IRestaurante"
 import http from "../../../http";
 
-
 const AdministracaoRestaurantes = () => {
     // obter restaurantes
     const [restaurantes, setRestaurantes] = useState<IRestaurante[]>([])
@@ -63,11 +62,6 @@ const AdministracaoRestaurantes = () => {
                             </TableCell>
                         </TableRow>
                     )}
-                    <TableRow>
-                        <IconButton aria-label="cadastrar" href="/admin/restaurantes/novo/"> 
-                            <AddIcon /> Cadastrar
-                        </IconButton>
-                    </TableRow>
                 </TableBody>
             </Table>
         </TableContainer>
