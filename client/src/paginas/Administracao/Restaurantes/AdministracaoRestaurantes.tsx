@@ -1,7 +1,6 @@
 import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import AddIcon from '@mui/icons-material/Add';
 
 import { useEffect, useState } from "react"
 
@@ -9,10 +8,10 @@ import IRestaurante from "../../../interfaces/IRestaurante"
 import http from "../../../http";
 
 const AdministracaoRestaurantes = () => {
-    // obter restaurantes
     const [restaurantes, setRestaurantes] = useState<IRestaurante[]>([])
 
     useEffect(() => {
+        // obter restaurantes
         http.admin
             .get<IRestaurante[]>("restaurantes/")
             .then(resposta => {
@@ -21,17 +20,16 @@ const AdministracaoRestaurantes = () => {
             .catch(erro => console.log(erro))
     }, [])
 
-    const excluir = (restauranteASerExcluido: IRestaurante) => {
+    const remover = (restauranteARemover: IRestaurante) => {
         http.admin
-            .delete(`restaurantes/${restauranteASerExcluido.id}/`)
+            .delete(`restaurantes/${restauranteARemover.id}/`)
             .then(() => {
-                const listaRestaurantes = restaurantes.filter(restaurante => {
-                    return restaurante.id !== restauranteASerExcluido.id
-                })
-
-                setRestaurantes([...listaRestaurantes])
+                setRestaurantes([
+                    ...restaurantes.filter(restaurante => {
+                        return restaurante.id !== restauranteARemover.id
+                    })
+                ])
             })
-            .catch(erro => console.log(erro))
     }
 
     return (
@@ -56,7 +54,7 @@ const AdministracaoRestaurantes = () => {
                                 </IconButton>
                             </TableCell>
                             <TableCell>
-                                <IconButton aria-label="deletar" onClick={() => excluir(restaurante)}>
+                                <IconButton aria-label="deletar" onClick={() => remover(restaurante)}>
                                     <DeleteIcon />
                                 </IconButton>
                             </TableCell>
