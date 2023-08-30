@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import http from "../../../http"
 import ITag from "../../../interfaces/ITag"
 import IRestaurante from "../../../interfaces/IRestaurante"
+import { useParams } from "react-router-dom"
 
 
 const FormularioPrato = () => {
@@ -18,6 +19,7 @@ const FormularioPrato = () => {
     const [tags, setTags] = useState<ITag[]>([])
     const [restaurantes, setRestaurantes] = useState<IRestaurante[]>([])
 
+    const parametros = useParams()
 
     useEffect(() => {
         // obter tags
@@ -31,7 +33,20 @@ const FormularioPrato = () => {
             .get<IRestaurante[]>('restaurantes/')
             .then(resultado => setRestaurantes(resultado.data))
             .catch(erro => console.log(erro))
-    }, [])
+
+        // obter prato
+        if (parametros.id) {
+            http.admin
+                .get(`pratos/${parametros.id}/`)
+                .then(resultado => {
+                    setNome(resultado.data.nome)
+                    setDescricao(resultado.data.descricao)
+                    setTag(resultado.data.tag)
+                    setRestaurante(resultado.data.restaurante)
+                })
+                .catch(erro => console.log(erro))
+        }
+    }, [parametros])
 
     const selecionarArquivo = (evento: React.ChangeEvent<HTMLInputElement>) => {
         if (evento.target.files?.length) {
@@ -55,28 +70,44 @@ const FormularioPrato = () => {
             formData.append("imagem", imagem)
         }
 
+        const options = { 
+            method: "", 
+            url: "", 
+        }
+
+        let mensagem = ""
+
+        if (parametros.id) {
+            // atualiza pratos
+            options.method = "PUT"
+            options.url = `pratos/${parametros.id}/`
+            mensagem = "Prato atualizado com sucesso!"
+        } else {
+            // cadastra novo prato
+            options.method = "POST"
+            options.url = "pratos/"
+            mensagem = "Prato cadastrado com sucesso!"
+        }
+ 
         http.admin
             .request({
-                url: "pratos/",
-                method: "POST",
+                url: options.url,
+                method: options.method,
                 headers: {
                     "Content-Type": "multipart/data-form"
                 },
                 data: formData
             })
             .then(() => {
-                alert("Prato cadastrado com sucesso!")
-                
-                // limpa formulário
-                window.location.reload()
+                alert(mensagem)
 
-                // setNome('')
-                // setDescricao('')
-                // setTag('')
-                // setRestaurante('')
+                // limpa formulário
+                setNome('')
+                setDescricao('')
+                setTag('')
+                setRestaurante('')
             })
             .catch(erro => console.log(erro))
-
     }
 
     return (
@@ -121,7 +152,7 @@ const FormularioPrato = () => {
                     </Select>
                 </FormControl>
 
-                <input type="file" onChange={selecionarArquivo}></input>
+                <input type="file" id="update-imagem" onChange={selecionarArquivo}></input>
 
                 <Button sx={{ marginTop: 1 }} type="submit" variant="outlined" fullWidth>
                     Salvar
