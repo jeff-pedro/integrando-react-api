@@ -1,7 +1,7 @@
-import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+import { Grid, IconButton, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
+import { Delete, Edit } from "@mui/icons-material";
 
+import { Link as RouterLink } from "react-router-dom";
 import { useEffect, useState } from "react"
 
 import IRestaurante from "../../../interfaces/IRestaurante"
@@ -33,36 +33,51 @@ const AdministracaoRestaurantes = () => {
     }
 
     return (
-        <TableContainer component={Paper}>
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Nome</TableCell>
-                        <TableCell>Editar</TableCell>
-                        <TableCell>Deletar</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {restaurantes.map(restaurante =>
-                        <TableRow key={restaurante.id}>
-                            <TableCell>
-                                {restaurante.nome}
-                            </TableCell>
-                            <TableCell>
-                                <IconButton aria-label="editar" href={`/admin/restaurantes/${restaurante.id}`}>
-                                    <EditIcon />
-                                </IconButton>
-                            </TableCell>
-                            <TableCell>
-                                <IconButton aria-label="deletar" onClick={() => remover(restaurante)}>
-                                    <DeleteIcon />
-                                </IconButton>
-                            </TableCell>
+        <>
+            <Grid container>
+                <Grid item xs>
+                    <Typography component="h1" variant="h6">
+                        Restaurantes
+                    </Typography>
+                </Grid>
+                <Grid item>
+                    <Link
+                        variant="button"
+                        component={RouterLink}
+                        to="/admin/restaurantes/novo"
+                    >
+                        Novo
+                    </Link>
+                </Grid>
+            </Grid>
+            <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Nome</TableCell>
+                            <TableCell colSpan={2} align="center">Ações</TableCell>
                         </TableRow>
-                    )}
-                </TableBody>
-            </Table>
-        </TableContainer>
+                    </TableHead>
+                    <TableBody>
+                        {restaurantes?.map(restaurante => (
+                            <TableRow key={restaurante.id}>
+                                <TableCell>
+                                    {restaurante.nome}
+                                </TableCell>
+                                <TableCell align="center">
+                                    <IconButton sx={{ marginRight: 3 }} aria-label="editar" href={`/admin/restaurantes/${restaurante.id}`}>
+                                        <Edit />
+                                    </IconButton>
+                                    <IconButton aria-label="deletar" onClick={() => remover(restaurante)}>
+                                        <Delete />
+                                    </IconButton>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </>
     )
 }
 
