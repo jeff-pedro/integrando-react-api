@@ -4,7 +4,8 @@ import { useEffect, useState } from "react"
 import http from "../../../http"
 import ITag from "../../../interfaces/ITag"
 import IRestaurante from "../../../interfaces/IRestaurante"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
+import { Method } from "axios"
 
 
 const FormularioPrato = () => {
@@ -12,7 +13,6 @@ const FormularioPrato = () => {
     const [nome, setNome] = useState('')
     const [descricao, setDescricao] = useState('')
     const [imagem, setImagem] = useState<File | null>(null)
-
     const [tag, setTag] = useState('')
     const [restaurante, setRestaurante] = useState('')
 
@@ -20,19 +20,18 @@ const FormularioPrato = () => {
     const [restaurantes, setRestaurantes] = useState<IRestaurante[]>([])
 
     const parametros = useParams()
+    const navigate = useNavigate()
 
     useEffect(() => {
         // obter tags
         http.admin
             .get<{ tags: ITag[] }>('tags/')
             .then(resultado => setTags(resultado.data.tags))
-            .catch(erro => console.log(erro))
 
         // obter restaurantes
         http.admin
             .get<IRestaurante[]>('restaurantes/')
             .then(resultado => setRestaurantes(resultado.data))
-            .catch(erro => console.log(erro))
 
         // obter prato
         if (parametros.id) {
@@ -44,7 +43,6 @@ const FormularioPrato = () => {
                     setTag(resultado.data.tag)
                     setRestaurante(resultado.data.restaurante)
                 })
-                .catch(erro => console.log(erro))
         }
     }, [parametros])
 
@@ -59,6 +57,16 @@ const FormularioPrato = () => {
     const aoSubmeterForm = (evento: React.FormEvent<HTMLFormElement>) => {
         evento.preventDefault()
 
+        let url = "pratos/"
+        let method: Method = "POST"
+
+        // atualização de pratos
+        if (parametros.id) {
+            method = "PUT"
+            url += `${parametros.id}/`
+        }
+
+        // trata dados do formulário
         const formData = new FormData()
 
         formData.append("nome", nome)
@@ -70,44 +78,19 @@ const FormularioPrato = () => {
             formData.append("imagem", imagem)
         }
 
-        const options = { 
-            method: "", 
-            url: "", 
-        }
-
-        let mensagem = ""
-
-        if (parametros.id) {
-            // atualiza pratos
-            options.method = "PUT"
-            options.url = `pratos/${parametros.id}/`
-            mensagem = "Prato atualizado com sucesso!"
-        } else {
-            // cadastra novo prato
-            options.method = "POST"
-            options.url = "pratos/"
-            mensagem = "Prato cadastrado com sucesso!"
-        }
- 
+        // faz a requisição
         http.admin
             .request({
-                url: options.url,
-                method: options.method,
+                url,
+                method,
                 headers: {
                     "Content-Type": "multipart/data-form"
                 },
                 data: formData
             })
             .then(() => {
-                alert(mensagem)
-
-                // limpa formulário
-                setNome('')
-                setDescricao('')
-                setTag('')
-                setRestaurante('')
+                navigate('/admin/pratos/')
             })
-            .catch(erro => console.log(erro))
     }
 
     return (
