@@ -66,6 +66,14 @@ const FormularioPrato = () => {
             })
             .then(() => {
                 alert("Prato cadastrado com sucesso!")
+                
+                // limpa formulário
+                window.location.reload()
+
+                // setNome('')
+                // setDescricao('')
+                // setTag('')
+                // setRestaurante('')
             })
             .catch(erro => console.log(erro))
 
