@@ -1,4 +1,4 @@
-import { Grid, IconButton, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Grid, IconButton, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
 import { Delete, Edit } from "@mui/icons-material";
 
 import { Link as RouterLink } from "react-router-dom";
@@ -9,6 +9,7 @@ import http from "../../../http";
 
 const AdministracaoRestaurantes = () => {
     const [restaurantes, setRestaurantes] = useState<IRestaurante[]>([])
+    const [confirmaExclusao, setConfirmaExclusao] = useState(false)
 
     useEffect(() => {
         // obter restaurantes
@@ -20,16 +21,20 @@ const AdministracaoRestaurantes = () => {
             .catch(erro => console.log(erro))
     }, [])
 
-    const remover = (restauranteARemover: IRestaurante) => {
-        http.admin
-            .delete(`restaurantes/${restauranteARemover.id}/`)
-            .then(() => {
-                setRestaurantes([
-                    ...restaurantes.filter(restaurante => {
-                        return restaurante.id !== restauranteARemover.id
-                    })
-                ])
-            })
+
+    const excluir = (restauranteAExcluir: IRestaurante) => {
+        if (confirmaExclusao) {
+            http.admin
+                .delete(`restaurantes/${restauranteAExcluir.id}/`)
+                .then(() => {
+                    setRestaurantes([
+                        ...restaurantes.filter(restaurante => {
+                            return restaurante.id !== restauranteAExcluir.id
+                        })
+                    ])
+                    setConfirmaExclusao(false)
+                })
+        }
     }
 
     return (
@@ -50,33 +55,53 @@ const AdministracaoRestaurantes = () => {
                     </Link>
                 </Grid>
             </Grid>
-            <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Nome</TableCell>
-                            <TableCell colSpan={2} align="center">Ações</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {restaurantes?.map(restaurante => (
-                            <TableRow key={restaurante.id}>
-                                <TableCell>
-                                    {restaurante.nome}
-                                </TableCell>
-                                <TableCell align="center">
-                                    <IconButton sx={{ marginRight: 3 }} aria-label="editar" href={`/admin/restaurantes/${restaurante.id}`}>
-                                        <Edit />
-                                    </IconButton>
-                                    <IconButton aria-label="deletar" onClick={() => remover(restaurante)}>
-                                        <Delete />
-                                    </IconButton>
-                                </TableCell>
+            <div>
+                <TableContainer component={Paper}>
+                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Nome</TableCell>
+                                <TableCell colSpan={2} align="center">Ações</TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                        </TableHead>
+                        <TableBody>
+                            {restaurantes?.map(restaurante => (
+                                <TableRow key={restaurante.id}>
+                                    <TableCell>
+                                        {restaurante.nome}
+                                    </TableCell>
+                                    <TableCell align="center">
+                                        <IconButton sx={{ marginRight: 3 }} aria-label="editar" href={`/admin/restaurantes/${restaurante.id}`}>
+                                            <Edit />
+                                        </IconButton>
+                                        <IconButton aria-label="deletar" onClick={() => setConfirmaExclusao(true)}>
+                                            <Delete />
+                                        </IconButton>
+                                        <Dialog
+                                            sx={{ opacity: 0.5 }}
+                                            open={confirmaExclusao}
+                                            onClose={() => setConfirmaExclusao(false)}
+                                            aria-describedby="alert-dialog-description"
+                                        >
+                                            <DialogContent>
+                                                <DialogContentText id="alert-dialog-description">
+                                                    Excluir esse restaurante?
+                                                </DialogContentText>
+                                            </DialogContent>
+                                            <DialogActions>
+                                                <Button onClick={() => setConfirmaExclusao(false)}>Cancelar</Button>
+                                                <Button onClick={() => excluir(restaurante)} autoFocus>
+                                                    Excluir
+                                                </Button>
+                                            </DialogActions>
+                                        </Dialog>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </div>
         </>
     )
 }
