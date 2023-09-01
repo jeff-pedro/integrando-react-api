@@ -29,18 +29,21 @@ cd ./client && npm start
 
 ### Funcionalidades
 #### Integração de API ao site
-- Listagem dinâmica de restaurantes
+Listagem dinâmica de restaurantes
 <p>
 	<img width="460" height="300" src="assets/listagem-restaurantes.gif">
 </p>
-- Busca com ordenação de resultados de restaurantes
+
+Busca com ordenação de resultados de restaurantes
 <p>
 	<img width="460" height="300" src="assets/busca-restaurantes.gif">
 </p>
-- Páginação e botões de navegação entre as páginas.
+
+Páginação e botões de navegação entre as páginas.
 <p>
 	<img width="460" height="300" src="assets/paginacao-restaurantes.gif">
 </p>
+
 #### Área administrativa para:
 
 Administração de pratos e restaurantes
@@ -67,10 +70,8 @@ Exclusão de restaurante e pratos com confirmação
 </p>
 
 
-
 ### Explorado
-
-#### Uso de compomentes do MUI:
+#### Uso de compomentes do MUI
 	
 - **[Select](https://mui.com/material-ui/react-select/) e FormControl** 
 		- para selecionar tags no formulário administrativo de pratos e restaurantes
@@ -94,15 +95,15 @@ Exclusão de restaurante e pratos com confirmação
 
 - **[Outlet](https://reactrouter.com/en/main/components/outlet)** para adicionar conteúdo html em um layout centralizado, de maneira a organizar o código .
 
-- **[useEffect()](https://react.dev/reference/react/useEffect)** hook react que executa algo (no caso a chamada da API) imediatamente quando o componente é montado:
+- **[useEffect](https://react.dev/reference/react/useEffect)** hook react que executa algo (no caso a chamada da API) imediatamente quando o componente é montado:
     
     Aceita uma função callback e uma lista de dependências:
 	1. executa a função toda vez que os valores das dependências é alterada.
 	2. quando a lista é passada vazia executa o código apenas uma única vez.
 		
-- **[useNavigate()](https://reactrouter.com/en/main/hooks/use-navigate)** hook react usando no redirecionamento das páginas.
+- **[useNavigate](https://reactrouter.com/en/main/hooks/use-navigate)** hook react usando no redirecionamento das páginas.
 
-- **[useState()](https://react.dev/reference/react/useState)** hook react para atualizar o estado local (variáveis).
+- **[useState](https://react.dev/reference/react/useState)** hook react para atualizar o estado local (variáveis).
 
 - Upload de arquivos com o elemento **input**.
 
