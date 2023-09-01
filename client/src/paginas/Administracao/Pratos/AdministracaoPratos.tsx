@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Grid, IconButton, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
+import { Grid, IconButton, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
 import { Delete, Edit } from "@mui/icons-material";
 
 import { useEffect, useState } from "react"
@@ -6,9 +6,11 @@ import { Link as RouterLink } from "react-router-dom";
 
 import IPrato from "../../../interfaces/IPrato"
 import http from "../../../http";
+import ConfirmDialog from "../../../componentes/ConfirmDialog";
 
 const AdministracaoPratos = () => {
     const [pratos, setPratos] = useState<IPrato[]>([])
+    const [pratoAExcluir, setPratoAExcluir] = useState<IPrato>()
     const [confirmaExclusao, setConfirmaExclusao] = useState(false)
 
     useEffect(() => {
@@ -18,16 +20,23 @@ const AdministracaoPratos = () => {
             .then(resposta => setPratos(resposta.data))
     }, [])
 
-    const excluir = (pratoAExcluir: IPrato) => {
+    const excluir = () => {
         if (confirmaExclusao) {
             http.admin
-                .delete(`pratos/${pratoAExcluir.id}/`)
+                .delete(`pratos/${pratoAExcluir?.id}/`)
                 .then(() => {
                     setPratos([
-                        ...pratos.filter(prato => prato.id !== pratoAExcluir.id)
+                        ...pratos.filter(prato => prato.id !== pratoAExcluir?.id)
                     ])
                 })
         }
+
+        setConfirmaExclusao(false)
+    }
+
+    function abreBotaoExcluir(prato: IPrato) {
+        setConfirmaExclusao(true)
+        setPratoAExcluir(prato)
     }
 
     return (
@@ -74,27 +83,16 @@ const AdministracaoPratos = () => {
                                             <Edit />
                                         </IconButton>
                                     </Link>
-                                    <IconButton aria-label="deletar" onClick={() => setConfirmaExclusao(true)}>
+                                    <IconButton aria-label="excluir" onClick={() => abreBotaoExcluir(prato)}>
                                         <Delete />
                                     </IconButton>
-                                    <Dialog
-                                        sx={{ opacity: 0.5 }}
+                                    <ConfirmDialog
+                                        title="Excluir Prato?"
+                                        children={`Tem certeza que quer excluir o prato ${pratoAExcluir?.nome}?`}
                                         open={confirmaExclusao}
-                                        onClose={() => setConfirmaExclusao(false)}
-                                        aria-describedby="alert-dialog-description"
-                                    >
-                                        <DialogContent>
-                                            <DialogContentText id="alert-dialog-description">
-                                                Excluir esse restaurante?
-                                            </DialogContentText>
-                                        </DialogContent>
-                                        <DialogActions>
-                                            <Button onClick={() => setConfirmaExclusao(false)}>Cancelar</Button>
-                                            <Button onClick={() => excluir(prato)} autoFocus>
-                                                Excluir
-                                            </Button>
-                                        </DialogActions>
-                                    </Dialog>
+                                        setOpen={setConfirmaExclusao}
+                                        onConfirm={excluir}
+                                    ></ConfirmDialog>
                                 </TableCell>
                             </TableRow>
                         )}

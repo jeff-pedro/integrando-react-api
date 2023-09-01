@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Grid, IconButton, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
+import { Grid, IconButton, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
 import { Delete, Edit } from "@mui/icons-material";
 
 import { Link as RouterLink } from "react-router-dom";
@@ -6,9 +6,11 @@ import { useEffect, useState } from "react"
 
 import IRestaurante from "../../../interfaces/IRestaurante"
 import http from "../../../http";
+import ConfirmDialog from "../../../componentes/ConfirmDialog";
 
 const AdministracaoRestaurantes = () => {
     const [restaurantes, setRestaurantes] = useState<IRestaurante[]>([])
+    const [restauranteAExcluir, setRestauranteAExcluir] = useState<IRestaurante>()
     const [confirmaExclusao, setConfirmaExclusao] = useState(false)
 
     useEffect(() => {
@@ -22,19 +24,27 @@ const AdministracaoRestaurantes = () => {
     }, [])
 
 
-    const excluir = (restauranteAExcluir: IRestaurante) => {
+    const excluir = () => {
         if (confirmaExclusao) {
             http.admin
-                .delete(`restaurantes/${restauranteAExcluir.id}/`)
+                .delete(`restaurantes/${restauranteAExcluir?.id}/`)
                 .then(() => {
                     setRestaurantes([
                         ...restaurantes.filter(restaurante => {
-                            return restaurante.id !== restauranteAExcluir.id
+                            return restaurante.id !== restauranteAExcluir?.id
                         })
                     ])
+
                     setConfirmaExclusao(false)
                 })
         }
+
+        setConfirmaExclusao(false)
+    }
+
+    const abreBotaoExcluir = (restaurante: IRestaurante) => {
+        setConfirmaExclusao(true)
+        setRestauranteAExcluir(restaurante)
     }
 
     return (
@@ -74,27 +84,16 @@ const AdministracaoRestaurantes = () => {
                                         <IconButton sx={{ marginRight: 3 }} aria-label="editar" href={`/admin/restaurantes/${restaurante.id}`}>
                                             <Edit />
                                         </IconButton>
-                                        <IconButton aria-label="deletar" onClick={() => setConfirmaExclusao(true)}>
+                                        <IconButton aria-label="deletar" onClick={() => abreBotaoExcluir(restaurante)}>
                                             <Delete />
                                         </IconButton>
-                                        <Dialog
-                                            sx={{ opacity: 0.5 }}
+                                        <ConfirmDialog
+                                            title="Excluir Restaurante?"
+                                            children={`Tem certeza que quer excluir o restaurante ${restauranteAExcluir?.nome}?`}
                                             open={confirmaExclusao}
-                                            onClose={() => setConfirmaExclusao(false)}
-                                            aria-describedby="alert-dialog-description"
-                                        >
-                                            <DialogContent>
-                                                <DialogContentText id="alert-dialog-description">
-                                                    Excluir esse restaurante?
-                                                </DialogContentText>
-                                            </DialogContent>
-                                            <DialogActions>
-                                                <Button onClick={() => setConfirmaExclusao(false)}>Cancelar</Button>
-                                                <Button onClick={() => excluir(restaurante)} autoFocus>
-                                                    Excluir
-                                                </Button>
-                                            </DialogActions>
-                                        </Dialog>
+                                            setOpen={setConfirmaExclusao}
+                                            onConfirm={excluir}
+                                        ></ConfirmDialog>
                                     </TableCell>
                                 </TableRow>
                             ))}
