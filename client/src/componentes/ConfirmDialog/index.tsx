@@ -6,7 +6,7 @@ const ConfirmDialog = (props: IDialogProperty) => {
 
     return (
         <Dialog
-            sx={{ opacity: 0.5 }}
+            sx={{ opacity: 0.3 }}
             open={open}
             onClose={() => setOpen(false)}
             aria-describedby="confirm-dialog"
